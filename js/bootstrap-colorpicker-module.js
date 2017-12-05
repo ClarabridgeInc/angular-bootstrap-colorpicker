@@ -325,12 +325,29 @@ angular.module('colorpicker.module', [])
                   $scope.$apply(ngModel.$setViewValue(newColor));
                   update(true);
                 }
-              }).on('keydown', function(event){
-                if (event.keyCode===13 && /^#[0-9A-Fa-f]{6}$/.test(pickerColorInput.val())){
+              }).on('keydown', function(event) {
+                setTimeout(function() {
+                  var newColor = pickerColorInput.val();
+                  if (event.keyCode === 13 && /^#[0-9A-Fa-f]{6}$/.test(newColor)) {
+                    updateColor(newColor);
+                    emitEvent('colorpicker-selected');
+                  }
+                }, 100);
+              }).on('paste', function (event) {
+                setTimeout(function() {
+                  var newColor = pickerColorInput.val();
+                  updateColor(newColor);
                   emitEvent('colorpicker-selected');
-                }
-
+                }, 100);
               });
+          }
+
+          function updateColor(newColor) {
+            elem.val(newColor);
+            if (ngModel && ngModel.$modelValue !== newColor) {
+              $scope.$apply(ngModel.$setViewValue(newColor));
+              update(true);
+            }
           }
 
           function bindMouseEvents() {
